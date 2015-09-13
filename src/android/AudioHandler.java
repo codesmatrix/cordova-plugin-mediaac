@@ -16,7 +16,7 @@
        specific language governing permissions and limitations
        under the License.
 */
-package org.apache.cordova.media;
+package org.apache.cordova.mediaac;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -61,6 +61,21 @@ public class AudioHandler extends CordovaPlugin {
     public AudioHandler() {
         this.players = new HashMap<String, AudioPlayer>();
         this.pausedForPhone = new ArrayList<AudioPlayer>();
+
+        //Register icy protocol
+        try {
+            java.net.URL.setURLStreamHandlerFactory( new java.net.URLStreamHandlerFactory(){
+                public java.net.URLStreamHandler createURLStreamHandler( String protocol ) {
+                    Log.d( "Registrando icy", "Asking for stream handler for protocol: '" + protocol + "'" );
+                    if ("icy".equals( protocol )) return new com.spoledge.aacdecoder.IcyURLStreamHandler();
+                    return null;
+                }
+            });
+        }
+        catch (Throwable t) {
+            Log.w( "Registrando icy", "Cannot set the ICY URLStreamHandler - maybe already set ? - " + t );
+        }
+
     }
 
     /**
@@ -75,7 +90,7 @@ public class AudioHandler extends CordovaPlugin {
         PluginResult.Status status = PluginResult.Status.OK;
         String result = "";
 
-        if (action.equals("startRecordingAudio")) {
+        if (action.equals("startPlayingAudio")) {
             String target = args.getString(1);
             String fileUriStr;
             try {
@@ -84,56 +99,23 @@ public class AudioHandler extends CordovaPlugin {
             } catch (IllegalArgumentException e) {
                 fileUriStr = target;
             }
-            this.startRecordingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
-        }
-        else if (action.equals("stopRecordingAudio")) {
-            this.stopRecordingAudio(args.getString(0));
-        }
-        else if (action.equals("startPlayingAudio")) {
-            String target = args.getString(1);
-            String fileUriStr;
-            try {
-                Uri targetUri = resourceApi.remapUri(Uri.parse(target));
-                fileUriStr = targetUri.toString();
-            } catch (IllegalArgumentException e) {
-                fileUriStr = target;
-            }
-            this.startPlayingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
-        }
-        else if (action.equals("seekToAudio")) {
-            this.seekToAudio(args.getString(0), args.getInt(1));
-        }
-        else if (action.equals("pausePlayingAudio")) {
-            this.pausePlayingAudio(args.getString(0));
-        }
-        else if (action.equals("stopPlayingAudio")) {
+            this.startPlayingAudio(args.getString(0), fileUriStr);
+
+        } else if (action.equals("stopPlayingAudio")) {
             this.stopPlayingAudio(args.getString(0));
-        } else if (action.equals("setVolume")) {
-           try {
-               this.setVolume(args.getString(0), Float.parseFloat(args.getString(1)));
-           } catch (NumberFormatException nfe) {
-               //no-op
-           }
-        } else if (action.equals("getCurrentPositionAudio")) {
-            float f = this.getCurrentPositionAudio(args.getString(0));
-            callbackContext.sendPluginResult(new PluginResult(status, f));
-            return true;
-        }
-        else if (action.equals("getDurationAudio")) {
-            float f = this.getDurationAudio(args.getString(0), args.getString(1));
-            callbackContext.sendPluginResult(new PluginResult(status, f));
-            return true;
-        }
-        else if (action.equals("create")) {
+
+        } else if (action.equals("create")) {
             String id = args.getString(0);
-            String src = FileHelper.stripFileProtocol(args.getString(1));
+            String src = args.getString(1);
             getOrCreatePlayer(id, src);
         }
+
         else if (action.equals("release")) {
             boolean b = this.release(args.getString(0));
             callbackContext.sendPluginResult(new PluginResult(status, b));
             return true;
         }
+
         else if (action.equals("messageChannel")) {
             messageChannel = callbackContext;
             return true;
@@ -187,7 +169,7 @@ public class AudioHandler extends CordovaPlugin {
                 for (AudioPlayer audio : this.players.values()) {
                     if (audio.getState() == AudioPlayer.STATE.MEDIA_RUNNING.ordinal()) {
                         this.pausedForPhone.add(audio);
-                        audio.pausePlaying();
+                        audio.stopPlaying();
                     }
                 }
 
@@ -237,27 +219,6 @@ public class AudioHandler extends CordovaPlugin {
     }
 
     /**
-     * Start recording and save the specified file.
-     * @param id				The id of the audio player
-     * @param file				The name of the file
-     */
-    public void startRecordingAudio(String id, String file) {
-        AudioPlayer audio = getOrCreatePlayer(id, file);
-        audio.startRecording(file);
-    }
-
-    /**
-     * Stop recording and save to the file specified when recording started.
-     * @param id				The id of the audio player
-     */
-    public void stopRecordingAudio(String id) {
-        AudioPlayer audio = this.players.get(id);
-        if (audio != null) {
-            audio.stopRecording();
-        }
-    }
-
-    /**
      * Start or resume playing audio file.
      * @param id				The id of the audio player
      * @param file				The name of the audio file.
@@ -265,29 +226,6 @@ public class AudioHandler extends CordovaPlugin {
     public void startPlayingAudio(String id, String file) {
         AudioPlayer audio = getOrCreatePlayer(id, file);
         audio.startPlaying(file);
-    }
-
-    /**
-     * Seek to a location.
-     * @param id				The id of the audio player
-     * @param milliseconds		int: number of milliseconds to skip 1000 = 1 second
-     */
-    public void seekToAudio(String id, int milliseconds) {
-        AudioPlayer audio = this.players.get(id);
-        if (audio != null) {
-            audio.seekToPlaying(milliseconds);
-        }
-    }
-
-    /**
-     * Pause playing.
-     * @param id				The id of the audio player
-     */
-    public void pausePlayingAudio(String id) {
-        AudioPlayer audio = this.players.get(id);
-        if (audio != null) {
-            audio.pausePlaying();
-        }
     }
 
     /**
@@ -299,30 +237,6 @@ public class AudioHandler extends CordovaPlugin {
         if (audio != null) {
             audio.stopPlaying();
         }
-    }
-
-    /**
-     * Get current position of playback.
-     * @param id				The id of the audio player
-     * @return 					position in msec
-     */
-    public float getCurrentPositionAudio(String id) {
-        AudioPlayer audio = this.players.get(id);
-        if (audio != null) {
-            return (audio.getCurrentPosition() / 1000.0f);
-        }
-        return -1;
-    }
-
-    /**
-     * Get the duration of the audio file.
-     * @param id				The id of the audio player
-     * @param file				The name of the audio file.
-     * @return					The duration in msec.
-     */
-    public float getDurationAudio(String id, String file) {
-        AudioPlayer audio = getOrCreatePlayer(id, file);
-        return audio.getDuration(file);
     }
 
     /**
@@ -360,21 +274,6 @@ public class AudioHandler extends CordovaPlugin {
         }
         else {
             return -1;
-        }
-    }
-
-    /**
-     * Set the volume for an audio device
-     *
-     * @param id				The id of the audio player
-     * @param volume            Volume to adjust to 0.0f - 1.0f
-     */
-    public void setVolume(String id, float volume) {
-        AudioPlayer audio = this.players.get(id);
-        if (audio != null) {
-            audio.setVolume(volume);
-        } else {
-            System.out.println("AudioHandler.setVolume() Error: Unknown Audio Player " + id);
         }
     }
 

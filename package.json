@@ -1,9 +1,9 @@
 {
-  "name": "cordova-plugin-media",
-  "version": "1.0.2-dev",
-  "description": "Cordova Media Plugin",
+  "name": "cordova-plugin-mediaac",
+  "version": "1.0.2-aac",
+  "description": "Cordova Media AAC Plugin",
   "cordova": {
-    "id": "cordova-plugin-media",
+    "id": "cordova-plugin-mediaac",
     "platforms": [
       "android",
       "amazon-fireos",
@@ -19,11 +19,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/apache/cordova-plugin-media"
+    "url": "https://github.com/AlexisCaffa/cordova-plugin-mediaac"
   },
   "keywords": [
     "cordova",
     "media",
+    "mediaac",
+    "aac",
+    "aacp",
+    "aac+",
     "ecosystem:cordova",
     "cordova-android",
     "cordova-amazon-fireos",
@@ -36,9 +40,6 @@
     "cordova-windows",
     "cordova-tizen"
   ],
-  "peerDependencies": {
-    "cordova-plugin-file": ">=2.0.0"
-  },
-  "author": "Apache Software Foundation",
+  "author": "Alexis Caffa",
   "license": "Apache 2.0"
 }

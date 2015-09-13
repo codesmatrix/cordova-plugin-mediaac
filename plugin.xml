@@ -20,31 +20,29 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
-id="cordova-plugin-media"
-    version="1.0.2-dev">
+id="cordova-plugin-mediaaac"
+    version="1.0.2-aac">
 
-    <name>Media</name>
-    <description>Cordova Media Plugin</description>
+    <name>Media AAC</name>
+    <description>Cordova Media AAC Plugin</description>
     <license>Apache 2.0</license>
-    <keywords>cordova,media</keywords>
-    <repo>https://git-wip-us.apache.org/repos/asf/cordova-plugin-media.git</repo>
-    <issue>https://issues.apache.org/jira/browse/CB/component/12320647</issue>
-    
-    <dependency id="cordova-plugin-file" version=">=2.0.0" />
+    <keywords>cordova,media,aac,mediaac</keywords>
+    <repo>https://github.com/AlexisCaffa/cordova-plugin-mediaac.git</repo>
+    <issue>https://github.com/AlexisCaffa/cordova-plugin-mediaac/milestones</issue>
 
-    <js-module src="www/MediaError.js" name="MediaError">
-        <clobbers target="window.MediaError" />
+    <js-module src="www/MediaacError.js" name="MediaacError">
+        <clobbers target="window.MediaacError" />
     </js-module>
     
-    <js-module src="www/Media.js" name="Media">
-        <clobbers target="window.Media" />
+    <js-module src="www/Mediaac.js" name="Mediaac">
+        <clobbers target="window.Mediaac" />
     </js-module>
     
     <!-- android -->
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="Media" >
-                <param name="android-package" value="org.apache.cordova.media.AudioHandler"/>
+            <feature name="Mediaac" >
+                <param name="android-package" value="org.apache.cordova.mediaac.AudioHandler"/>
             </feature>
         </config-file>
         
@@ -55,16 +53,24 @@ id="cordova-plugin-media"
             <uses-permission android:name="android.permission.READ_PHONE_STATE" />
         </config-file>
         
-        <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/media" />
-        <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/media" />
-        <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/media" />
+        <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/mediaac" />
+        <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/mediaac" />
+        <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/mediaac" />
+
+
+        <source-file src="lib/android/aacdecoder-android-0.8.jar" target-dir="libs" />
+        <source-file src="lib/android/mips" target-dir="libs" />
+        <source-file src="lib/android/x86" target-dir="libs" />
+        <source-file src="lib/android/armeabi" target-dir="libs" />
+        <source-file src="lib/android/armeabi-v7a" target-dir="libs" />
+
      </platform>
      
      <!-- amazon-fireos -->
     <platform name="amazon-fireos">
         <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="Media" >
-                <param name="android-package" value="org.apache.cordova.media.AudioHandler"/>
+            <feature name="Mediaac" >
+                <param name="android-package" value="org.apache.cordova.mediaac.AudioHandler"/>
             </feature>
         </config-file>
         
@@ -75,16 +81,16 @@ id="cordova-plugin-media"
             <uses-permission android:name="android.permission.READ_PHONE_STATE" />
         </config-file>
         
-        <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/media" />
-        <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/media" />
-        <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/media" />
+        <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/mediaac" />
+        <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/mediaac" />
+        <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/mediaac" />
      </platform>
 
 
      <!-- ubuntu -->
      <platform name="ubuntu">
          <config-file target="config.xml" parent="/*">
-             <feature name="Media">
+             <feature name="Mediaac">
                  <param policy_group="microphone" policy_version="1" />
                  <param policy_group="video" policy_version="1" />
              </feature>
@@ -96,7 +102,7 @@ id="cordova-plugin-media"
      <!-- ios -->
      <platform name="ios">    
          <config-file target="config.xml" parent="/*">
-             <feature name="Media">
+             <feature name="Mediaac">
                  <param name="ios-package" value="CDVSound" /> 
              </feature>
          </config-file>
@@ -106,17 +112,17 @@ id="cordova-plugin-media"
 
     <!-- blackberry10 -->
     <platform name="blackberry10">
-        <source-file src="src/blackberry10/index.js" target-dir="Media" />
+        <source-file src="src/blackberry10/index.js" target-dir="Mediaac" />
         <config-file target="www/config.xml" parent="/widget">
-            <feature name="Media" value="Media"/>
+            <feature name="Mediaac" value="Mediaac"/>
         </config-file>
     </platform>
 
     <!-- wp7 -->
     <platform name="wp7">
         <config-file target="config.xml" parent="/*">
-            <feature name="Media">
-                <param name="wp-package" value="Media"/>
+            <feature name="Mediaac">
+                <param name="wp-package" value="Mediaac"/>
             </feature>
         </config-file>
 
@@ -132,8 +138,8 @@ id="cordova-plugin-media"
     <!-- wp8 -->
     <platform name="wp8">
         <config-file target="config.xml" parent="/*">
-            <feature name="Media">
-                <param name="wp-package" value="Media"/>
+            <feature name="Mediaac">
+                <param name="wp-package" value="Mediaac"/>
             </feature>
         </config-file>
 
@@ -178,8 +184,8 @@ id="cordova-plugin-media"
 
     <!-- browser -->
     <platform name="browser">
-        <js-module src="www/browser/Media.js" name="BrowserMedia">
-            <clobbers target="window.Media" />
+        <js-module src="www/browser/Mediaac.js" name="BrowserMediaac">
+            <clobbers target="window.Mediaac" />
         </js-module>
     </platform>
 

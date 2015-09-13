@@ -37,8 +37,8 @@ var mediaObjects = {};
  * @param statusCallback        The callback to be called when media status has changed.
  *                                  statusCallback(int statusCode) - OPTIONAL
  */
-var Media = function(src, successCallback, errorCallback, statusCallback) {
-    argscheck.checkArgs('sFFF', 'Media', arguments);
+var Mediaac = function(src, successCallback, errorCallback, statusCallback) {
+    argscheck.checkArgs('sFFF', 'Mediaac', arguments);
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
     this.src = src;
@@ -47,122 +47,65 @@ var Media = function(src, successCallback, errorCallback, statusCallback) {
     this.statusCallback = statusCallback;
     this._duration = -1;
     this._position = -1;
-    exec(null, this.errorCallback, "Media", "create", [this.id, this.src]);
+    exec(null, this.errorCallback, "Mediaac", "create", [this.id, this.src]);
 };
 
-// Media messages
-Media.MEDIA_STATE = 1;
-Media.MEDIA_DURATION = 2;
-Media.MEDIA_POSITION = 3;
-Media.MEDIA_ERROR = 9;
+// Mediaac messages
+Mediaac.MEDIA_STATE = 1;
+Mediaac.MEDIA_DURATION = 2;
+Mediaac.MEDIA_POSITION = 3;
+Mediaac.MEDIA_ERROR = 9;
 
-// Media states
-Media.MEDIA_NONE = 0;
-Media.MEDIA_STARTING = 1;
-Media.MEDIA_RUNNING = 2;
-Media.MEDIA_PAUSED = 3;
-Media.MEDIA_STOPPED = 4;
-Media.MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped"];
+// Mediaac states
+Mediaac.MEDIA_NONE = 0;
+Mediaac.MEDIA_STARTING = 1;
+Mediaac.MEDIA_RUNNING = 2;
+Mediaac.MEDIA_PAUSED = 3;
+Mediaac.MEDIA_STOPPED = 4;
+Mediaac.MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped"];
 
 // "static" function to return existing objs.
-Media.get = function(id) {
+Mediaac.get = function(id) {
     return mediaObjects[id];
 };
 
 /**
  * Start or resume playing audio file.
  */
-Media.prototype.play = function(options) {
-    exec(null, null, "Media", "startPlayingAudio", [this.id, this.src, options]);
+Mediaac.prototype.play = function(options) {
+    exec(null, null, "Mediaac", "startPlayingAudio", [this.id, this.src, options]);
 };
 
 /**
  * Stop playing audio file.
  */
-Media.prototype.stop = function() {
+Mediaac.prototype.stop = function() {
     var me = this;
     exec(function() {
         me._position = 0;
-    }, this.errorCallback, "Media", "stopPlayingAudio", [this.id]);
-};
-
-/**
- * Seek or jump to a new time in the track..
- */
-Media.prototype.seekTo = function(milliseconds) {
-    var me = this;
-    exec(function(p) {
-        me._position = p;
-    }, this.errorCallback, "Media", "seekToAudio", [this.id, milliseconds]);
-};
-
-/**
- * Pause playing audio file.
- */
-Media.prototype.pause = function() {
-    exec(null, this.errorCallback, "Media", "pausePlayingAudio", [this.id]);
-};
-
-/**
- * Get duration of an audio file.
- * The duration is only set for audio that is playing, paused or stopped.
- *
- * @return      duration or -1 if not known.
- */
-Media.prototype.getDuration = function() {
-    return this._duration;
-};
-
-/**
- * Get position of audio.
- */
-Media.prototype.getCurrentPosition = function(success, fail) {
-    var me = this;
-    exec(function(p) {
-        me._position = p;
-        success(p);
-    }, fail, "Media", "getCurrentPositionAudio", [this.id]);
+    }, this.errorCallback, "Mediaac", "stopPlayingAudio", [this.id]);
 };
 
 /**
  * Start recording audio file.
  */
-Media.prototype.startRecord = function() {
-    exec(null, this.errorCallback, "Media", "startRecordingAudio", [this.id, this.src]);
+Mediaac.prototype.startRecord = function() {
+    exec(null, this.errorCallback, "Mediaac", "startRecordingAudio", [this.id, this.src]);
 };
 
 /**
  * Stop recording audio file.
  */
-Media.prototype.stopRecord = function() {
-    exec(null, this.errorCallback, "Media", "stopRecordingAudio", [this.id]);
+Mediaac.prototype.stopRecord = function() {
+    exec(null, this.errorCallback, "Mediaac", "stopRecordingAudio", [this.id]);
 };
 
 /**
  * Release the resources.
  */
-Media.prototype.release = function() {
-    exec(null, this.errorCallback, "Media", "release", [this.id]);
+Mediaac.prototype.release = function() {
+    exec(null, this.errorCallback, "Mediaac", "release", [this.id]);
 };
-
-/**
- * Adjust the volume.
- */
-Media.prototype.setVolume = function(volume) {
-    exec(null, null, "Media", "setVolume", [this.id, volume]);
-};
-
-/**
- * Adjust the playback rate.
- */
-Media.prototype.setRate = function(rate) {
-    if (cordova.platformId === 'ios'){
-        exec(null, null, "Media", "setRate", [this.id, rate]);
-    } else {
-        console.warn('media.setRate method is currently not supported for', cordova.platformId, 'platform.')
-    }
-};
-
 
 /**
  * Audio has status update.
@@ -172,43 +115,43 @@ Media.prototype.setRate = function(rate) {
  * @param msgType       The 'type' of update this is
  * @param value         Use of value is determined by the msgType
  */
-Media.onStatus = function(id, msgType, value) {
+Mediaac.onStatus = function(id, msgType, value) {
 
     var media = mediaObjects[id];
 
     if(media) {
         switch(msgType) {
-            case Media.MEDIA_STATE :
+            case Mediaac.MEDIA_STATE :
                 media.statusCallback && media.statusCallback(value);
-                if(value == Media.MEDIA_STOPPED) {
+                if(value == Mediaac.MEDIA_STOPPED) {
                     media.successCallback && media.successCallback();
                 }
                 break;
-            case Media.MEDIA_DURATION :
+            case Mediaac.MEDIA_DURATION :
                 media._duration = value;
                 break;
-            case Media.MEDIA_ERROR :
+            case Mediaac.MEDIA_ERROR :
                 media.errorCallback && media.errorCallback(value);
                 break;
-            case Media.MEDIA_POSITION :
+            case Mediaac.MEDIA_POSITION :
                 media._position = Number(value);
                 break;
             default :
-                console.error && console.error("Unhandled Media.onStatus :: " + msgType);
+                console.error && console.error("Unhandled Mediaac.onStatus :: " + msgType);
                 break;
         }
     }
     else {
-         console.error && console.error("Received Media.onStatus callback for unknown media :: " + id);
+         console.error && console.error("Received Mediaac.onStatus callback for unknown media :: " + id);
     }
 
 };
 
-module.exports = Media;
+module.exports = Mediaac;
 
 function onMessageFromNative(msg) {
     if (msg.action == 'status') {
-        Media.onStatus(msg.status.id, msg.status.msgType, msg.status.value);
+        Mediaac.onStatus(msg.status.id, msg.status.msgType, msg.status.value);
     } else {
         throw new Error('Unknown media action' + msg.action);
     }
@@ -222,7 +165,7 @@ if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos' |
     channel.waitForInitialization('onMediaPluginReady');
 
     channel.onCordovaReady.subscribe(function() {
-        exec(onMessageFromNative, undefined, 'Media', 'messageChannel', []);
+        exec(onMessageFromNative, undefined, 'Mediaac', 'messageChannel', []);
         channel.initializationComplete('onMediaPluginReady');
     });
 }

@@ -17,10 +17,11 @@
 #         under the License.
 -->
 
-# cordova-plugin-media
+# cordova-plugin-mediaac
 
 
-This plugin provides the ability to record and play back audio files on a device.
+This plugin provides the ability to play back audio files and audio streaming on a device.
+Support AAC, AAC+ and MP3 format.
 
 __NOTE__: The current implementation does not adhere to a W3C
 specification for media capture, and is provided for convenience only.
@@ -33,23 +34,16 @@ Although in the global scope, it is not available until after the `deviceready` 
 
     document.addEventListener("deviceready", onDeviceReady, false);
     function onDeviceReady() {
-        console.log(Media);
+        console.log(Mediaac);
     }
 
 ## Installation
 
-    cordova plugin add cordova-plugin-media
+    cordova plugin add https://github.com/AlexisCaffa/cordova-plugin-mediaac.git
 
 ## Supported Platforms
 
-- Android
-- BlackBerry 10
-- iOS
-- Windows Phone 7 and 8
-- Tizen
-- Windows 8
-- Windows
-- Browser
+- Android (tested)
 
 ## Windows Phone Quirks
 
@@ -59,15 +53,15 @@ Although in the global scope, it is not available until after the `deviceready` 
 
 [url]: http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh184838(v=vs.92).aspx
 
-## Media
+## Mediaac
 
-    var media = new Media(src, mediaSuccess, [mediaError], [mediaStatus]);
+    var media = new Mediaac(src, mediaSuccess, [mediaError], [mediaStatus]);
 
 ### Parameters
 
 - __src__: A URI containing the audio content. _(DOMString)_
 
-- __mediaSuccess__: (Optional) The callback that executes after a `Media` object has completed the current play, record, or stop action. _(Function)_
+- __mediaSuccess__: (Optional) The callback that executes after a `Mediaac` object has completed the current play, record, or stop action. _(Function)_
 
 - __mediaError__: (Optional) The callback that executes if an error occurs. _(Function)_
 
@@ -75,7 +69,7 @@ Although in the global scope, it is not available until after the `deviceready` 
 
 __NOTE__: `cdvfile` path is supported as `src` parameter:
 ```javascript
-var my_media = new Media('cdvfile://localhost/temporary/recording.mp3', ...);
+var my_media = new Mediaac('cdvfile://localhost/temporary/recording.mp3', ...);
 ```
 
 ### Constants
@@ -83,17 +77,13 @@ var my_media = new Media('cdvfile://localhost/temporary/recording.mp3', ...);
 The following constants are reported as the only parameter to the
 `mediaStatus` callback:
 
-- `Media.MEDIA_NONE`     = 0;
-- `Media.MEDIA_STARTING` = 1;
-- `Media.MEDIA_RUNNING`  = 2;
-- `Media.MEDIA_PAUSED`   = 3;
-- `Media.MEDIA_STOPPED`  = 4;
+- `Mediaac.MEDIA_NONE`     = 0;
+- `Mediaac.MEDIA_STARTING` = 1;
+- `Mediaac.MEDIA_RUNNING`  = 2;
+- `Mediaac.MEDIA_PAUSED`   = 3;
+- `Mediaac.MEDIA_STOPPED`  = 4;
 
 ### Methods
-
-- `media.getCurrentPosition`: Returns the current position within an audio file.
-
-- `media.getDuration`: Returns the duration of an audio file.
 
 - `media.play`: Start or resume playing an audio file.
 
@@ -101,87 +91,7 @@ The following constants are reported as the only parameter to the
 
 - `media.release`: Releases the underlying operating system's audio resources.
 
-- `media.seekTo`: Moves the position within the audio file.
-
-- `media.setVolume`: Set the volume for audio playback.
-
-- `media.startRecord`: Start recording an audio file.
-
-- `media.stopRecord`: Stop recording an audio file.
-
 - `media.stop`: Stop playing an audio file.
-
-### Additional ReadOnly Parameters
-
-- __position__: The position within the audio playback, in seconds.
-    - Not automatically updated during play; call `getCurrentPosition` to update.
-
-- __duration__: The duration of the media, in seconds.
-
-
-## media.getCurrentPosition
-
-Returns the current position within an audio file.  Also updates the `Media` object's `position` parameter.
-
-    media.getCurrentPosition(mediaSuccess, [mediaError]);
-
-### Parameters
-
-- __mediaSuccess__: The callback that is passed the current position in seconds.
-
-- __mediaError__: (Optional) The callback to execute if an error occurs.
-
-### Quick Example
-
-    // Audio player
-    //
-    var my_media = new Media(src, onSuccess, onError);
-
-    // Update media position every second
-    var mediaTimer = setInterval(function () {
-        // get media position
-        my_media.getCurrentPosition(
-            // success callback
-            function (position) {
-                if (position > -1) {
-                    console.log((position) + " sec");
-                }
-            },
-            // error callback
-            function (e) {
-                console.log("Error getting pos=" + e);
-            }
-        );
-    }, 1000);
-
-
-## media.getDuration
-
-Returns the duration of an audio file in seconds. If the duration is unknown, it returns a value of -1.
-
-
-    media.getDuration();
-
-### Quick Example
-
-    // Audio player
-    //
-    var my_media = new Media(src, onSuccess, onError);
-
-    // Get duration
-    var counter = 0;
-    var timerDur = setInterval(function() {
-        counter = counter + 100;
-        if (counter > 2000) {
-            clearInterval(timerDur);
-        }
-        var dur = my_media.getDuration();
-        if (dur > 0) {
-            clearInterval(timerDur);
-            document.getElementById('audio_duration').innerHTML = (dur) + " sec";
-        }
-    }, 100);
-
 
 ## media.pause
 
@@ -196,7 +106,7 @@ Pauses playing an audio file.
     //
     function playAudio(url) {
         // Play the audio file at url
-        var my_media = new Media(url,
+        var my_media = new Mediaac(url,
             // success callback
             function () { console.log("playAudio():Audio Success"); },
             // error callback
@@ -226,7 +136,7 @@ Starts or resumes playing an audio file.
     //
     function playAudio(url) {
         // Play the audio file at url
-        var my_media = new Media(url,
+        var my_media = new Mediaac(url,
             // success callback
             function () {
                 console.log("playAudio():Audio Success");
@@ -246,30 +156,30 @@ Starts or resumes playing an audio file.
 - __numberOfLoops__: Pass this option to the `play` method to specify
   the number of times you want the media file to play, e.g.:
 
-        var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
-        myMedia.play({ numberOfLoops: 2 })
+        var myMediaac = new Mediaac("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
+        myMediaac.play({ numberOfLoops: 2 })
 
 - __playAudioWhenScreenIsLocked__: Pass in this option to the `play`
   method to specify whether you want to allow playback when the screen
   is locked.  If set to `true` (the default value), the state of the
   hardware mute button is ignored, e.g.:
 
-        var myMedia = new Media("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
-        myMedia.play({ playAudioWhenScreenIsLocked : false })
+        var myMediaac = new Mediaac("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
+        myMediaac.play({ playAudioWhenScreenIsLocked : false })
 
 - __order of file search__: When only a file name or simple path is
   provided, iOS searches in the `www` directory for the file, then in
   the application's `documents/tmp` directory:
 
-        var myMedia = new Media("audio/beer.mp3")
-        myMedia.play()  // first looks for file in www/audio/beer.mp3 then in <application>/documents/tmp/audio/beer.mp3
+        var myMediaac = new Mediaac("audio/beer.mp3")
+        myMediaac.play()  // first looks for file in www/audio/beer.mp3 then in <application>/documents/tmp/audio/beer.mp3
 
 ## media.release
 
 Releases the underlying operating system's audio resources.
 This is particularly important for Android, since there are a finite amount of
 OpenCore instances for media playback. Applications should call the `release`
-function for any `Media` resource that is no longer needed.
+function for any `Mediaac` resource that is no longer needed.
 
     media.release();
 
@@ -278,147 +188,11 @@ function for any `Media` resource that is no longer needed.
 
     // Audio player
     //
-    var my_media = new Media(src, onSuccess, onError);
+    var my_media = new Mediaac(src, onSuccess, onError);
 
     my_media.play();
     my_media.stop();
     my_media.release();
-
-
-## media.seekTo
-
-Sets the current position within an audio file.
-
-    media.seekTo(milliseconds);
-
-### Parameters
-
-- __milliseconds__: The position to set the playback position within the audio, in milliseconds.
-
-
-### Quick Example
-
-    // Audio player
-    //
-    var my_media = new Media(src, onSuccess, onError);
-        my_media.play();
-    // SeekTo to 10 seconds after 5 seconds
-    setTimeout(function() {
-        my_media.seekTo(10000);
-    }, 5000);
-
-
-### BlackBerry 10 Quirks
-
-- Not supported on BlackBerry OS 5 devices.
-
-## media.setVolume
-
-Set the volume for an audio file.
-
-    media.setVolume(volume);
-
-### Parameters
-
-- __volume__: The volume to set for playback.  The value must be within the range of 0.0 to 1.0.
-
-### Supported Platforms
-
-- Android
-- iOS
-
-### Quick Example
-
-    // Play audio
-    //
-    function playAudio(url) {
-        // Play the audio file at url
-        var my_media = new Media(url,
-            // success callback
-            function() {
-                console.log("playAudio():Audio Success");
-            },
-            // error callback
-            function(err) {
-                console.log("playAudio():Audio Error: "+err);
-        });
-
-        // Play audio
-        my_media.play();
-
-        // Mute volume after 2 seconds
-        setTimeout(function() {
-            my_media.setVolume('0.0');
-        }, 2000);
-
-        // Set volume to 1.0 after 5 seconds
-        setTimeout(function() {
-            my_media.setVolume('1.0');
-        }, 5000);
-    }
-
-
-## media.startRecord
-
-Starts recording an audio file.
-
-    media.startRecord();
-
-### Supported Platforms
-
-- Android
-- iOS
-- Windows Phone 7 and 8
-- Windows
-
-### Quick Example
-
-    // Record audio
-    //
-    function recordAudio() {
-        var src = "myrecording.mp3";
-        var mediaRec = new Media(src,
-            // success callback
-            function() {
-                console.log("recordAudio():Audio Success");
-            },
-
-            // error callback
-            function(err) {
-                console.log("recordAudio():Audio Error: "+ err.code);
-            });
-
-        // Record audio
-        mediaRec.startRecord();
-    }
-
-
-### Android Quirks
-
-- Android devices record audio in Adaptive Multi-Rate format. The specified file should end with a _.amr_ extension.
-- The hardware volume controls are wired up to the media volume while any Media objects are alive. Once the last created Media object has `release()` called on it, the volume controls revert to their default behaviour. The controls are also reset on page navigation, as this releases all Media objects.
-
-### iOS Quirks
-
-- iOS only records to files of type _.wav_ and returns an error if the file name extension is not correct.
-
-- If a full path is not provided, the recording is placed in the application's `documents/tmp` directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY`. Any subdirectory specified at record time must already exist.
-
-- Files can be recorded and played back using the documents URI:
-
-        var myMedia = new Media("documents://beer.mp3")
-
-### Windows Quirks
-
-- Windows devices can use MP3, M4A and WMA formats for recorded audio. However in most cases it is not possible to use MP3 for audio recording on _Windows Phone 8.1_ devices, because an MP3 encoder is [not shipped with Windows Phone](https://msdn.microsoft.com/en-us/library/windows/apps/windows.media.mediaproperties.mediaencodingprofile.createmp3.aspx).
-
-- If a full path is not provided, the recording is placed in the AppData/temp directory. This can be accessed via the `File` API using `LocalFileSystem.TEMPORARY` or 'ms-appdata:///temp/<filename>' URI.
-
-- Any subdirectory specified at record time must already exist.
-
-### Tizen Quirks
-
-- Not supported on Tizen devices.
 
 ## media.stop
 
@@ -432,7 +206,7 @@ Stops playing an audio file.
     //
     function playAudio(url) {
         // Play the audio file at url
-        var my_media = new Media(url,
+        var my_media = new Mediaac(url,
             // success callback
             function() {
                 console.log("playAudio():Audio Success");
@@ -452,55 +226,9 @@ Stops playing an audio file.
         }, 10000);
     }
 
+## MediaacError
 
-## media.stopRecord
-
-Stops recording an audio file.
-
-    media.stopRecord();
-
-### Supported Platforms
-
-- Android
-- iOS
-- Windows Phone 7 and 8
-- Windows
-
-### Quick Example
-
-    // Record audio
-    //
-    function recordAudio() {
-        var src = "myrecording.mp3";
-        var mediaRec = new Media(src,
-            // success callback
-            function() {
-                console.log("recordAudio():Audio Success");
-            },
-
-            // error callback
-            function(err) {
-                console.log("recordAudio():Audio Error: "+ err.code);
-            }
-        );
-
-        // Record audio
-        mediaRec.startRecord();
-
-        // Stop recording after 10 seconds
-        setTimeout(function() {
-            mediaRec.stopRecord();
-        }, 10000);
-    }
-
-
-### Tizen Quirks
-
-- Not supported on Tizen devices.
-
-## MediaError
-
-A `MediaError` object is returned to the `mediaError` callback
+A `MediaacError` object is returned to the `mediaError` callback
 function when an error occurs.
 
 ### Properties
@@ -511,8 +239,8 @@ function when an error occurs.
 
 ### Constants
 
-- `MediaError.MEDIA_ERR_ABORTED`        = 1
-- `MediaError.MEDIA_ERR_NETWORK`        = 2
-- `MediaError.MEDIA_ERR_DECODE`         = 3
-- `MediaError.MEDIA_ERR_NONE_SUPPORTED` = 4
+- `MediaacError.MEDIA_ERR_ABORTED`        = 1
+- `MediaacError.MEDIA_ERR_NETWORK`        = 2
+- `MediaacError.MEDIA_ERR_DECODE`         = 3
+- `MediaacError.MEDIA_ERR_NONE_SUPPORTED` = 4
 

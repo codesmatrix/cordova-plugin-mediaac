@@ -140,3 +140,6 @@
 * CB-9079 Increased timeout for playback tests
 * CB-8888 Makes media status reporting on windows more precise
 * CB-8793 Increased playback timeout in tests
+
+### 1.0.2-aac (Sep 07, 2015)
+* AAC+ format support
