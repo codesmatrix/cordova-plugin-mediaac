@@ -28,28 +28,28 @@
  which has 1 property for an instance, 'code'
 
  instead of doing :
-    errorCallbackFunction( new MediaError(3,'msg') );
+    errorCallbackFunction( new MediaacError(3,'msg') );
 we should simply use a literal :
     errorCallbackFunction( {'code':3} );
  */
 
- var _MediaError = window.MediaError;
+ var _MediaacError = window.MediaacError;
 
 
-if(!_MediaError) {
-    window.MediaError = _MediaError = function(code, msg) {
+if(!_MediaacError) {
+    window.MediaacError = _MediaacError = function(code, msg) {
         this.code = (typeof code != 'undefined') ? code : null;
         this.message = msg || ""; // message is NON-standard! do not use!
     };
 }
 
-_MediaError.MEDIA_ERR_NONE_ACTIVE    = _MediaError.MEDIA_ERR_NONE_ACTIVE    || 0;
-_MediaError.MEDIA_ERR_ABORTED        = _MediaError.MEDIA_ERR_ABORTED        || 1;
-_MediaError.MEDIA_ERR_NETWORK        = _MediaError.MEDIA_ERR_NETWORK        || 2;
-_MediaError.MEDIA_ERR_DECODE         = _MediaError.MEDIA_ERR_DECODE         || 3;
-_MediaError.MEDIA_ERR_NONE_SUPPORTED = _MediaError.MEDIA_ERR_NONE_SUPPORTED || 4;
-// TODO: MediaError.MEDIA_ERR_NONE_SUPPORTED is legacy, the W3 spec now defines it as below.
+_MediaacError.MEDIA_ERR_NONE_ACTIVE    = _MediaacError.MEDIA_ERR_NONE_ACTIVE    || 0;
+_MediaacError.MEDIA_ERR_ABORTED        = _MediaacError.MEDIA_ERR_ABORTED        || 1;
+_MediaacError.MEDIA_ERR_NETWORK        = _MediaacError.MEDIA_ERR_NETWORK        || 2;
+_MediaacError.MEDIA_ERR_DECODE         = _MediaacError.MEDIA_ERR_DECODE         || 3;
+_MediaacError.MEDIA_ERR_NONE_SUPPORTED = _MediaacError.MEDIA_ERR_NONE_SUPPORTED || 4;
+// TODO: MediaacError.MEDIA_ERR_NONE_SUPPORTED is legacy, the W3 spec now defines it as below.
 // as defined by http://dev.w3.org/html5/spec-author-view/video.html#error-codes
-_MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED = _MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED || 4;
+_MediaacError.MEDIA_ERR_SRC_NOT_SUPPORTED = _MediaacError.MEDIA_ERR_SRC_NOT_SUPPORTED || 4;
 
-module.exports = _MediaError;
+module.exports = _MediaacError;
