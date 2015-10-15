@@ -34,11 +34,13 @@ var mediaObjects = {};
  *                                  successCallback()
  * @param errorCallback         The callback to be called if there is an error.
  *                                  errorCallback(int errorCode) - OPTIONAL
- * @param statusCallback        The callback to be called when media status has changed.
+ * @param statusCallback        The callback to be called when mediaac status has changed.
  *                                  statusCallback(int statusCode) - OPTIONAL
+ * @param playerType            The mediaac player type { androidPlayer | streamPlayer }.
  */
-var Mediaac = function(src, successCallback, errorCallback, statusCallback) {
+var Mediaac = function(src, successCallback, errorCallback, statusCallback, playerType) {
     argscheck.checkArgs('sFFF', 'Mediaac', arguments);
+
     this.id = utils.createUUID();
     mediaObjects[this.id] = this;
     this.src = src;
@@ -47,7 +49,10 @@ var Mediaac = function(src, successCallback, errorCallback, statusCallback) {
     this.statusCallback = statusCallback;
     this._duration = -1;
     this._position = -1;
-    exec(null, this.errorCallback, "Mediaac", "create", [this.id, this.src]);
+
+    this.playerType = playerType ? playerType : "androidPlayer";
+
+    exec(null, this.errorCallback, "Mediaac", "create", [this.id, this.playerType, this.src]);
 };
 
 // Mediaac messages
@@ -64,6 +69,10 @@ Mediaac.MEDIA_PAUSED = 3;
 Mediaac.MEDIA_STOPPED = 4;
 Mediaac.MEDIA_MSG = ["None", "Starting", "Running", "Paused", "Stopped"];
 
+//Mediaac players
+Mediaac.PLAYER_ANDROID = "androidPlayer";
+Mediaac.PLAYER_STREAM = "streamPlayer";
+
 // "static" function to return existing objs.
 Mediaac.get = function(id) {
     return mediaObjects[id];
@@ -73,7 +82,7 @@ Mediaac.get = function(id) {
  * Start or resume playing audio file.
  */
 Mediaac.prototype.play = function(options) {
-    exec(null, null, "Mediaac", "startPlayingAudio", [this.id, this.src, options]);
+    exec(null, null, "Mediaac", "startPlayingAudio", [this.id, this.playerType, this.src, options]);
 };
 
 /**
@@ -83,7 +92,45 @@ Mediaac.prototype.stop = function() {
     var me = this;
     exec(function() {
         me._position = 0;
-    }, this.errorCallback, "Mediaac", "stopPlayingAudio", [this.id]);
+    }, this.errorCallback, "Mediaac", "stopPlayingAudio", [this.id, this.playerType]);
+};
+
+/**
+ * Seek or jump to a new time in the track..
+ */
+Mediaac.prototype.seekTo = function(milliseconds) {
+    var me = this;
+    exec(function(p) {
+        me._position = p;
+    }, this.errorCallback, "Mediaac", "seekToAudio", [this.id, milliseconds]);
+};
+
+/**
+ * Pause playing audio file.
+ */
+Mediaac.prototype.pause = function() {
+    exec(null, this.errorCallback, "Mediaac", "pausePlayingAudio", [this.id]);
+};
+
+/**
+ * Get duration of an audio file.
+ * The duration is only set for audio that is playing, paused or stopped.
+ *
+ * @return      duration or -1 if not known.
+ */
+Mediaac.prototype.getDuration = function() {
+    return this._duration;
+};
+
+/**
+ * Get position of audio.
+ */
+Mediaac.prototype.getCurrentPosition = function(success, fail) {
+    var me = this;
+    exec(function(p) {
+        me._position = p;
+        success(p);
+    }, fail, "Mediaac", "getCurrentPositionAudio", [this.id]);
 };
 
 /**
@@ -104,14 +151,21 @@ Mediaac.prototype.stopRecord = function() {
  * Release the resources.
  */
 Mediaac.prototype.release = function() {
-    exec(null, this.errorCallback, "Mediaac", "release", [this.id]);
+    exec(null, this.errorCallback, "Mediaac", "release", [this.id, this.playerType]);
+};
+
+/**
+ * Adjust the volume.
+ */
+Mediaac.prototype.setVolume = function(volume) {
+    exec(null, null, "Mediaac", "setVolume", [this.id, this.playerType, volume]);
 };
 
 /**
  * Audio has status update.
  * PRIVATE
  *
- * @param id            The media object id (string)
+ * @param id            The mediaac object id (string)
  * @param msgType       The 'type' of update this is
  * @param value         Use of value is determined by the msgType
  */
@@ -153,7 +207,7 @@ function onMessageFromNative(msg) {
     if (msg.action == 'status') {
         Mediaac.onStatus(msg.status.id, msg.status.msgType, msg.status.value);
     } else {
-        throw new Error('Unknown media action' + msg.action);
+        throw new Error('Unknown mediaac action' + msg.action);
     }
 }
 

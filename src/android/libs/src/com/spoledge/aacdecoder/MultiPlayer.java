@@ -29,7 +29,7 @@ import java.net.URLConnection;
  * It uses Decoder to decode Multi stream into PCM samples.
  * This class is not thread safe.
  * <pre>
- *  MultiPlayer player = new MultiPlayer();
+ *  StreamPlayer player = new StreamPlayer();
  *
  *  String url = ...;
  *  player.playAsync( url );
@@ -37,7 +37,7 @@ import java.net.URLConnection;
  */
 public class MultiPlayer extends AACPlayer {
 
-    private static final String LOG = "MultiPlayer";
+    private static final String LOG = "StreamPlayer";
 
 
     ////////////////////////////////////////////////////////////////////////////

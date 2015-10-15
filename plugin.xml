@@ -20,8 +20,8 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
-id="cordova-plugin-mediaaac"
-    version="1.0.2-aac">
+id="cordova-plugin-mediaac"
+    version="1.0.3-aac">
 
     <name>Media AAC</name>
     <description>Cordova Media AAC Plugin</description>
@@ -54,7 +54,9 @@ id="cordova-plugin-mediaaac"
         </config-file>
         
         <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/mediaac" />
-        <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/mediaac" />
+        <source-file src="src/android/Player.java" target-dir="src/org/apache/cordova/mediaac" />
+        <source-file src="src/android/AndroidPlayer.java" target-dir="src/org/apache/cordova/mediaac" />
+        <source-file src="src/android/StreamPlayer.java" target-dir="src/org/apache/cordova/mediaac" />
         <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/mediaac" />
 
 

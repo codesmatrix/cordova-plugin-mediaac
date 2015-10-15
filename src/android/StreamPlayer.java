@@ -22,15 +22,10 @@ import com.spoledge.aacdecoder.MultiPlayer;
 import com.spoledge.aacdecoder.PlayerCallback;
 
 import android.media.AudioTrack;
-import android.os.Environment;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 /**
  * This class implements the audio playback and recording capabilities used by Cordova.
@@ -41,21 +36,20 @@ import java.io.IOException;
  *      android_asset:      file name must start with /android_asset/sound.mp3
  *      sdcard:             file name is just sound.mp3
  */
-public class AudioPlayer implements PlayerCallback{
+public class StreamPlayer extends Player implements PlayerCallback{
 
-    // AudioPlayer states
-    // AudioPlayer states
+    // StreamPlayer states
     public enum STATE { MEDIA_NONE,
                         MEDIA_STARTING,
                         MEDIA_RUNNING,
                         MEDIA_PAUSED,
                         MEDIA_STOPPED,
                         MEDIA_LOADING
-                      };
+                      }
 
-    private static final String LOG_TAG = "AudioPlayer";
+    private static final String LOG_TAG = "StreamPlayer";
 
-    // AudioPlayer message ids
+    // StreamPlayer message ids
     private static int MEDIA_STATE = 1;
     private static int MEDIA_DURATION = 2;
     private static int MEDIA_POSITION = 3;
@@ -83,7 +77,7 @@ public class AudioPlayer implements PlayerCallback{
      * @param handler           The audio handler object
      * @param id                The id of this audio player
      */
-    public AudioPlayer(AudioHandler handler, String id, String file) {
+    public StreamPlayer(AudioHandler handler, String id, String file) {
         this.handler = handler;
         this.id = id;
         this.audioFile = file;
@@ -126,11 +120,12 @@ public class AudioPlayer implements PlayerCallback{
         if ((this.state == STATE.MEDIA_RUNNING) || (this.state == STATE.MEDIA_PAUSED)) {
             if (player != null) {
                 player.stop();
+                Log.d(LOG_TAG, "stopPlaying is calling stopped");
                 player = null;
             }
         }
         else {
-            Log.d(LOG_TAG, "AudioPlayer Error: stopPlaying() called during invalid state: " + this.state.ordinal());
+            Log.d(LOG_TAG, "StreamPlayer Error: stopPlaying() called during invalid state: " + this.state.ordinal());
             sendErrorStatus(MEDIA_ERR_NONE_ACTIVE);
         }
     }
@@ -143,6 +138,17 @@ public class AudioPlayer implements PlayerCallback{
 
         // Send status notification to JavaScript
         sendStatusChange(MEDIA_DURATION, null, null);
+    }
+
+    /**
+     * Determine if playback file is streaming or local.
+     * It is streaming if file name starts with "http://"
+     *
+     * @param file              The file name
+     * @return                  T=streaming, F=local
+     */
+    public boolean isStreaming(String file) {
+        return file.contains("http://") || file.contains("https://");
     }
 
     /**
@@ -165,7 +171,7 @@ public class AudioPlayer implements PlayerCallback{
      * This method is called when an exception is thrown by player.
      */
     public void playerException( Throwable t ) {
-        Log.d(LOG_TAG, "AudioPlayer.playerException(" + t.toString() + ")");
+        Log.d(LOG_TAG, "StreamPlayer.playerException(" + t.toString() + ")");
         if (this.state == STATE.MEDIA_RUNNING) playerStopped( 0 );
 
         // Send error notification to JavaScript
@@ -218,7 +224,7 @@ public class AudioPlayer implements PlayerCallback{
                 }
             case MEDIA_LOADING:
                 //cordova js is not aware of MEDIA_LOADING, so we send MEDIA_STARTING instead
-                Log.d(LOG_TAG, "AudioPlayer Loading: startPlaying() called during media preparation: " + STATE.MEDIA_STARTING.ordinal());
+                Log.d(LOG_TAG, "StreamPlayer Loading: startPlaying() called during media preparation: " + STATE.MEDIA_STARTING.ordinal());
                 this.prepareOnly = false;
                 return false;
             case MEDIA_STARTING:
@@ -227,7 +233,7 @@ public class AudioPlayer implements PlayerCallback{
             case MEDIA_STOPPED:
                 return true;
             default:
-                Log.d(LOG_TAG, "AudioPlayer Error: startPlaying() called during invalid state: " + this.state);
+                Log.d(LOG_TAG, "StreamPlayer Error: startPlaying() called during invalid state: " + this.state);
                 sendErrorStatus(MEDIA_ERR_ABORTED);
         }
         return false;

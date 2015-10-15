@@ -20,7 +20,7 @@
 */
 
 /**
- * This class contains information about any Media errors.
+ * This class contains information about any Mediaac errors.
 */
 /*
  According to :: http://dev.w3.org/html5/spec-author-view/video.html#mediaerror

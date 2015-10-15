@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-mediaac",
-  "version": "1.0.2-aac",
+  "version": "1.0.3-aac",
   "description": "Cordova Media AAC Plugin",
   "cordova": {
     "id": "cordova-plugin-mediaac",
@@ -40,6 +40,9 @@
     "cordova-windows",
     "cordova-tizen"
   ],
+  "peerDependencies": {
+    "cordova-plugin-file": ">=2.0.0"
+  },
   "author": "Alexis Caffa",
   "license": "Apache 2.0"
 }

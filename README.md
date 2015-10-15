@@ -20,7 +20,7 @@
 # cordova-plugin-mediaac
 
 
-This plugin provides the ability to play back audio files and audio streaming on a device.
+This plugin provides the ability to play back audio streaming on a device.
 Support AAC, AAC+ and MP3 format.
 
 __NOTE__: The current implementation does not adhere to a W3C
@@ -28,7 +28,7 @@ specification for media capture, and is provided for convenience only.
 A future implementation will adhere to the latest W3C specification
 and may deprecate the current APIs.
 
-This plugin defines a global `Media` Constructor.
+This plugin defines a global `Mediaac` Constructor.
 
 Although in the global scope, it is not available until after the `deviceready` event.
 
