@@ -172,7 +172,7 @@ public class StreamPlayer extends Player implements PlayerCallback{
      */
     public void playerException( Throwable t ) {
         Log.d(LOG_TAG, "StreamPlayer.playerException(" + t.toString() + ")");
-        if (this.state == STATE.MEDIA_RUNNING) playerStopped( 0 );
+        if (this.state == STATE.MEDIA_RUNNING || this.state == STATE.MEDIA_STARTING) playerStopped( 0 );
 
         // Send error notification to JavaScript
         sendErrorStatus(t.hashCode());
