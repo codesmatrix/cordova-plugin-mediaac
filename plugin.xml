@@ -21,7 +21,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 xmlns:android="http://schemas.android.com/apk/res/android"
 id="cordova-plugin-mediaac"
-    version="1.0.3-aac">
+    version="2.4.1-aac">
 
     <name>Media AAC</name>
     <description>Cordova Media AAC Plugin</description>
@@ -29,6 +29,9 @@ id="cordova-plugin-mediaac"
     <keywords>cordova,media,aac,mediaac</keywords>
     <repo>https://github.com/AlexisCaffa/cordova-plugin-mediaac.git</repo>
     <issue>https://github.com/AlexisCaffa/cordova-plugin-mediaac/milestones</issue>
+
+    <dependency id="cordova-plugin-file" version="^4.0.0" />
+    <dependency id="cordova-plugin-compat" version="^1.0.0" />
 
     <js-module src="www/MediaacError.js" name="MediaacError">
         <clobbers target="window.MediaacError" />
@@ -75,14 +78,14 @@ id="cordova-plugin-mediaac"
                 <param name="android-package" value="org.apache.cordova.mediaac.AudioHandler"/>
             </feature>
         </config-file>
-        
+
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.RECORD_AUDIO" />
             <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
             <uses-permission android:name="android.permission.READ_PHONE_STATE" />
         </config-file>
-        
+
         <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/mediaac" />
         <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/mediaac" />
         <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/mediaac" />
@@ -101,16 +104,20 @@ id="cordova-plugin-mediaac"
          <source-file src="src/ubuntu/media.cpp" />
      </platform>
 
-     <!-- ios -->
-     <platform name="ios">    
-         <config-file target="config.xml" parent="/*">
-             <feature name="Mediaac">
-                 <param name="ios-package" value="CDVSound" /> 
-             </feature>
-         </config-file>
-         <header-file src="src/ios/CDVSound.h" />
-         <source-file src="src/ios/CDVSound.m" />
-     </platform>
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Mediaac">
+                <param name="ios-package" value="CDVSound" />
+            </feature>
+        </config-file>
+        <header-file src="src/ios/CDVSound.h" />
+        <source-file src="src/ios/CDVSound.m" />
+        <preference name="MICROPHONE_USAGE_DESCRIPTION" default=" " />
+        <config-file target="*-Info.plist" parent="NSMicrophoneUsageDescription">
+            <string>$MICROPHONE_USAGE_DESCRIPTION</string>
+        </config-file>
+    </platform>
 
     <!-- blackberry10 -->
     <platform name="blackberry10">

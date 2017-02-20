@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-mediaac",
-  "version": "1.0.3-aac",
+  "version": "2.4.2-aac",
   "description": "Cordova Media AAC Plugin",
   "cordova": {
     "id": "cordova-plugin-mediaac",
@@ -40,9 +40,20 @@
     "cordova-windows",
     "cordova-tizen"
   ],
-  "peerDependencies": {
-    "cordova-plugin-file": ">=2.0.0"
+  "scripts": {
+    "test": "npm run jshint",
+    "jshint": "jshint www && jshint src && jshint tests"
   },
-  "author": "Alexis Caffa",
-  "license": "Apache 2.0"
+  "author": "Apache Software Foundation",
+  "license": "Apache-2.0",
+  "engines": {
+    "cordovaDependencies": {
+      "3.0.0": {
+        "cordova": ">100"
+      }
+    }
+  },
+  "devDependencies": {
+    "jshint": "^2.6.0"
+  }
 }

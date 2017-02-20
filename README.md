@@ -32,30 +32,41 @@ This plugin defines a global `Mediaac` Constructor.
 
 Although in the global scope, it is not available until after the `deviceready` event.
 
+```js
     document.addEventListener("deviceready", onDeviceReady, false);
     function onDeviceReady() {
         console.log(Mediaac);
     }
+```
 
 ## Installation
 
+```bash
     cordova plugin add https://github.com/AlexisCaffa/cordova-plugin-mediaac.git
+```
 
 ## Supported Platforms
 
 - Android (tested)
 
+Without aac decoders:
+- BlackBerry 10
+- iOS
+- Windows Phone 7 and 8
+- Tizen
+- Windows 8
+- Windows
+- Browser
+
 ## Windows Phone Quirks
 
 - Only one media file can be played back at a time.
 
-- There are strict restrictions on how your application interacts with other media. See the [Microsoft documentation for details][url].
-
-[url]: http://msdn.microsoft.com/en-us/library/windowsphone/develop/hh184838(v=vs.92).aspx
-
 ## Mediaac
 
+```js
     var media = new Mediaac(src, mediaSuccess, [mediaError], [mediaStatus]);
+```
 
 ### Parameters
 
@@ -102,6 +113,7 @@ Pauses playing an audio file.
 
 ### Quick Example
 
+```js
     // Play audio
     //
     function playAudio(url) {
@@ -121,17 +133,19 @@ Pauses playing an audio file.
             media.pause();
         }, 10000);
     }
-
+```
 
 ## media.play
 
 Starts or resumes playing an audio file.
 
-    media.play();
-
+```js
+media.play();
+```
 
 ### Quick Example
 
+```js
     // Play audio
     //
     function playAudio(url) {
@@ -149,7 +163,7 @@ Starts or resumes playing an audio file.
         // Play audio
         my_media.play();
     }
-
+```
 
 ### iOS Quirks
 
@@ -166,6 +180,9 @@ Starts or resumes playing an audio file.
 
         var myMediaac = new Mediaac("http://audio.ibeat.org/content/p1rj1s/p1rj1s_-_rockGuitar.mp3")
         myMediaac.play({ playAudioWhenScreenIsLocked : false })
+        myMedia.setVolume('1.0');
+
+> Note: To allow playback with the screen locked or background audio you have to add `audio` to `UIBackgroundModes` in the `info.plist` file. See [Apple documentation](https://developer.apple.com/library/content/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html#//apple_ref/doc/uid/TP40007072-CH4-SW23). Also note that the audio has to be started before going to background.
 
 - __order of file search__: When only a file name or simple path is
   provided, iOS searches in the `www` directory for the file, then in
@@ -186,6 +203,7 @@ function for any `Mediaac` resource that is no longer needed.
 
 ### Quick Example
 
+```js
     // Audio player
     //
     var my_media = new Mediaac(src, onSuccess, onError);
@@ -193,6 +211,7 @@ function for any `Mediaac` resource that is no longer needed.
     my_media.play();
     my_media.stop();
     my_media.release();
+```
 
 ## media.stop
 
@@ -202,6 +221,7 @@ Stops playing an audio file.
 
 ### Quick Example
 
+```js
     // Play audio
     //
     function playAudio(url) {
@@ -225,6 +245,7 @@ Stops playing an audio file.
             my_media.stop();
         }, 10000);
     }
+```
 
 ## MediaacError
 
