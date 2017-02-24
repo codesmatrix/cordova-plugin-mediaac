@@ -30,9 +30,6 @@ id="cordova-plugin-mediaac"
     <repo>https://github.com/AlexisCaffa/cordova-plugin-mediaac.git</repo>
     <issue>https://github.com/AlexisCaffa/cordova-plugin-mediaac/milestones</issue>
 
-    <dependency id="cordova-plugin-file" version="^4.0.0" />
-    <dependency id="cordova-plugin-compat" version="^1.0.0" />
-
     <js-module src="www/MediaacError.js" name="MediaacError">
         <clobbers target="window.MediaacError" />
     </js-module>
@@ -50,16 +47,11 @@ id="cordova-plugin-mediaac"
         </config-file>
         
         <config-file target="AndroidManifest.xml" parent="/*">
-            <uses-permission android:name="android.permission.RECORD_AUDIO" />
             <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-            <uses-permission android:name="android.permission.READ_PHONE_STATE" />
         </config-file>
         
         <source-file src="src/android/AudioHandler.java" target-dir="src/org/apache/cordova/mediaac" />
-        <source-file src="src/android/Player.java" target-dir="src/org/apache/cordova/mediaac" />
-        <source-file src="src/android/AndroidPlayer.java" target-dir="src/org/apache/cordova/mediaac" />
-        <source-file src="src/android/StreamPlayer.java" target-dir="src/org/apache/cordova/mediaac" />
+        <source-file src="src/android/AudioPlayer.java" target-dir="src/org/apache/cordova/mediaac" />
         <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/mediaac" />
 
 

@@ -19,52 +19,12 @@
  *
 */
 
-/*global MediaacError, module, require*/
+/* global MediaacError */
 
 var argscheck = require('cordova/argscheck'),
     utils = require('cordova/utils');
 
 var mediaObjects = {};
-
-/**
- * Creates new Audio node and with necessary event listeners attached
- * @param  {Mediaac} media Mediaac object
- * @return {Audio}       Audio element 
- */
-function createNode (media) {
-    var node = new Audio();
-
-    node.onloadstart = function () {
-        Mediaac.onStatus(media.id, Mediaac.MEDIA_STATE, Mediaac.MEDIA_STARTING);
-    };
-
-    node.onplaying = function () {
-        Mediaac.onStatus(media.id, Mediaac.MEDIA_STATE, Mediaac.MEDIA_RUNNING);
-    };
-
-    node.ondurationchange = function (e) {
-        Mediaac.onStatus(media.id, Mediaac.MEDIA_DURATION, e.target.duration || -1);
-    };
-
-    node.onerror = function (e) {
-        // Due to media.spec.15 It should return MediaacError for bad filename
-        var err = e.target.error.code === MediaacError.MEDIA_ERR_SRC_NOT_SUPPORTED ?
-            { code: MediaacError.MEDIA_ERR_ABORTED } :
-            e.target.error;
-
-        Mediaac.onStatus(media.id, Mediaac.MEDIA_ERROR, err);
-    };
-
-    node.onended = function () {
-        Mediaac.onStatus(media.id, Mediaac.MEDIA_STATE, Mediaac.MEDIA_STOPPED);
-    };
-
-    if (media.src) {
-        node.src = media.src;
-    }
-
-    return node;
-}
 
 /**
  * This class provides access to the device media, interfaces to both sound and video
@@ -97,6 +57,46 @@ var Mediaac = function(src, successCallback, errorCallback, statusCallback) {
         Mediaac.onStatus(this.id, Mediaac.MEDIA_ERROR, { code: MediaacError.MEDIA_ERR_ABORTED });
     }
 };
+
+/**
+ * Creates new Audio node and with necessary event listeners attached
+ * @param  {Media} media Media object
+ * @return {Audio}       Audio element 
+ */
+function createNode (media) {
+    var node = new Audio();
+
+    node.onloadstart = function () {
+        Mediaac.onStatus(media.id, Mediaac.MEDIA_STATE, Mediaac.MEDIA_STARTING);
+    };
+
+    node.onplaying = function () {
+        Mediaac.onStatus(media.id, Mediaac.MEDIA_STATE, Mediaac.MEDIA_RUNNING);
+    };
+
+    node.ondurationchange = function (e) {
+        Mediaac.onStatus(media.id, Mediaac.MEDIA_DURATION, e.target.duration || -1);
+    };
+
+    node.onerror = function (e) {
+        // Due to media.spec.15 It should return MediaError for bad filename
+        var err = e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED ?
+            { code: MediaError.MEDIA_ERR_ABORTED } :
+            e.target.error;
+
+        Mediaac.onStatus(media.id, Mediaac.MEDIA_ERROR, err);
+    };
+
+    node.onended = function () {
+        Mediaac.onStatus(media.id, Mediaac.MEDIA_STATE, Mediaac.MEDIA_STOPPED);
+    };
+
+    if (media.src) {
+        node.src = media.src;
+    }
+
+    return node;
+}
 
 // Mediaac messages
 Mediaac.MEDIA_STATE = 1;
@@ -233,26 +233,34 @@ Mediaac.onStatus = function(id, msgType, value) {
     if(media) {
         switch(msgType) {
             case Mediaac.MEDIA_STATE :
-                media.statusCallback && media.statusCallback(value);
-                if(value === Mediaac.MEDIA_STOPPED) {
-                    media.successCallback && media.successCallback();
+                if (media.statusCallback) {
+                    media.statusCallback(value);
+                }
+                if (value === Mediaac.MEDIA_STOPPED) {
+                    if (media.successCallback) {
+                        media.successCallback();
+                    }
                 }
                 break;
             case Mediaac.MEDIA_DURATION :
                 media._duration = value;
                 break;
             case Mediaac.MEDIA_ERROR :
-                media.errorCallback && media.errorCallback(value);
+                if (media.errorCallback) {
+                    media.errorCallback(value);
+                }
                 break;
             case Mediaac.MEDIA_POSITION :
                 media._position = Number(value);
                 break;
             default :
-                console.error && console.error("Unhandled Mediaac.onStatus :: " + msgType);
+                if (console.error) {
+                    console.error("Unhandled Media.onStatus :: " + msgType);
+                }
                 break;
         }
-    } else {
-         console.error && console.error("Received Mediaac.onStatus callback for unknown media :: " + id);
+    } else if (console.error) {
+        console.error("Received Mediaac.onStatus callback for unknown media :: " + id);
     }
 };
 

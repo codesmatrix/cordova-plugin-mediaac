@@ -21,17 +21,12 @@ package org.apache.cordova.mediaac;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaResourceApi;
-import org.apache.cordova.PermissionHelper;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.net.Uri;
-import android.os.Build;
 
-import java.security.Permission;
 import java.lang.String;
 import java.util.ArrayList;
 
@@ -75,14 +70,14 @@ public class AudioHandler extends CordovaPlugin {
         try {
             java.net.URL.setURLStreamHandlerFactory( new java.net.URLStreamHandlerFactory(){
                 public java.net.URLStreamHandler createURLStreamHandler( String protocol ) {
-                    Log.d( "Registrando icy", "Asking for stream handler for protocol: '" + protocol + "'" );
+                    LOG.d( "Registrando icy", "Asking for stream handler for protocol: '" + protocol + "'" );
                     if ("icy".equals( protocol )) return new com.spoledge.aacdecoder.IcyURLStreamHandler();
                     return null;
                 }
             });
         }
         catch (Throwable t) {
-            Log.w( "Registrando icy", "Cannot set the ICY URLStreamHandler - maybe already set ? - " + t );
+            LOG.w( "Registrando icy", "Cannot set the ICY URLStreamHandler - maybe already set ? - " + t );
         }
 
     }
@@ -109,9 +104,6 @@ public class AudioHandler extends CordovaPlugin {
                 fileUriStr = target;
             }
             this.startPlayingAudio(args.getString(0), FileHelper.stripFileProtocol(fileUriStr));
-        }
-        else if (action.equals("seekToAudio")) {
-            this.seekToAudio(args.getString(0), args.getInt(1));
         }
         else if (action.equals("pausePlayingAudio")) {
             this.pausePlayingAudio(args.getString(0));
@@ -181,7 +173,7 @@ public class AudioHandler extends CordovaPlugin {
                 for (AudioPlayer audio : this.players.values()) {
                     if (audio.getState() == AudioPlayer.STATE.MEDIA_RUNNING.ordinal()) {
                         this.pausedForPhone.add(audio);
-                        audio.pausePlaying();
+                        audio.stopPlaying();
                     }
                 }
 
@@ -242,25 +234,13 @@ public class AudioHandler extends CordovaPlugin {
     }
 
     /**
-     * Seek to a location.
-     * @param id				The id of the audio player
-     * @param milliseconds		int: number of milliseconds to skip 1000 = 1 second
-     */
-    public void seekToAudio(String id, int milliseconds) {
-        AudioPlayer audio = this.players.get(id);
-        if (audio != null) {
-            audio.seekToPlaying(milliseconds);
-        }
-    }
-
-    /**
      * Pause playing.
      * @param id				The id of the audio player
      */
     public void pausePlayingAudio(String id) {
         AudioPlayer audio = this.players.get(id);
         if (audio != null) {
-            audio.pausePlaying();
+            audio.stopPlaying();
         }
     }
 
@@ -300,7 +280,7 @@ public class AudioHandler extends CordovaPlugin {
         for (AudioPlayer audio : this.players.values()) {
             if (audio.getState() == AudioPlayer.STATE.MEDIA_RUNNING.ordinal()) {
                 this.pausedForFocus.add(audio);
-                audio.pausePlaying();
+                audio.stopPlaying();
             }
         }
     }
