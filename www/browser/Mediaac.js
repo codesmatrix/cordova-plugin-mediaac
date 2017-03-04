@@ -79,9 +79,9 @@ function createNode (media) {
     };
 
     node.onerror = function (e) {
-        // Due to media.spec.15 It should return MediaError for bad filename
-        var err = e.target.error.code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED ?
-            { code: MediaError.MEDIA_ERR_ABORTED } :
+        // Due to media.spec.15 It should return MediaacError for bad filename
+        var err = e.target.error.code === MediaacError.MEDIA_ERR_SRC_NOT_SUPPORTED ?
+            { code: MediaacError.MEDIA_ERR_ABORTED } :
             e.target.error;
 
         Mediaac.onStatus(media.id, Mediaac.MEDIA_ERROR, err);
@@ -198,6 +198,34 @@ Mediaac.prototype.startRecord = function() {
  * Stop recording audio file.
  */
 Mediaac.prototype.stopRecord = function() {
+    Mediaac.onStatus(this.id, Mediaac.MEDIA_ERROR, "Not supported");
+};
+
+/**
+ * Pause recording audio file.
+ */
+Mediaac.prototype.pauseRecord = function() {
+    Mediaac.onStatus(this.id, Mediaac.MEDIA_ERROR, "Not supported");
+};
+
+/**
+ * Returns the current amplitude of the current recording.
+ */
+Mediaac.prototype.getCurrentAmplitude = function() {
+    Mediaac.onStatus(this.id, Mediaac.MEDIA_ERROR, "Not supported");
+};
+
+/**
+ * Resume recording an audio file.
+ */
+Mediaac.prototype.resumeRecord = function() {
+    Mediaac.onStatus(this.id, Mediaac.MEDIA_ERROR, "Not supported");
+};
+
+/**
+ * Set rate of an autio file.
+ */
+Mediaac.prototype.setRate = function() {
     Mediaac.onStatus(this.id, Mediaac.MEDIA_ERROR, "Not supported");
 };
 
