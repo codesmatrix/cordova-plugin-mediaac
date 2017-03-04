@@ -55,7 +55,7 @@ id="cordova-plugin-mediaac"
         <source-file src="src/android/FileHelper.java" target-dir="src/org/apache/cordova/mediaac" />
 
 
-        <source-file src="lib/android/aacdecoder-android-0.8.jar" target-dir="libs" />
+        <source-file src="lib/android/aacdecoder-android.jar" target-dir="libs" />
         <source-file src="lib/android/mips" target-dir="libs" />
         <source-file src="lib/android/x86" target-dir="libs" />
         <source-file src="lib/android/armeabi" target-dir="libs" />

@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- This is a dummy manifest only. -->
-<!-- It is needed by NDK and Maven  -->
-<manifest
-	  xmlns:android="http://schemas.android.com/apk/res/android"
-	  package="com.spoledge.aacdecoder"
-	  android:versionCode="10"
-	  android:versionName="0.8-SNAPSHOT"
->
-</manifest> 
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.spoledge.aacdecoder"
+    android:versionCode="11"
+    android:versionName="1.0" >
+</manifest>
