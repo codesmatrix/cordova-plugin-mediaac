@@ -20,7 +20,7 @@
  */
 
 /* jshint jasmine: true */
-/* global Windows, Media, MediaError, LocalFileSystem, halfSpeedBtn */
+/* global Windows, Mediaac, MediaacError, LocalFileSystem, halfSpeedBtn */
 
 // increased timeout for actual playback to give device chance to download and play mp3 file
 // some emulators can be REALLY slow at this, so two minutes
@@ -29,7 +29,8 @@ var ACTUAL_PLAYBACK_TEST_TIMEOUT = 2 * 60 * 1000;
 var WEB_MP3_FILE = 'https://cordova.apache.org/downloads/BlueZedEx.mp3';
 var WEB_MP3_STREAM = 'http://c22033-l.i.core.cdn.streamfarm.net/22033mdr/live/3087mdr_figaro/ch_classic_128.mp3';
 
-var isWindows = cordova.platformId == 'windows8' || cordova.platformId == 'windows';
+var isWindows = cordova.platformId === 'windows8' || cordova.platformId === 'windows';
+var isBrowser = cordova.platformId === 'browser';
 // Detect whether audio hardware is available and enabled. For iOS playing audio is
 // not supported on emulators w/out sound device connected to host PC but (which is
 // the case for Sauce Labs emulators - see CB-11430)
@@ -96,12 +97,12 @@ exports.defineAutoTests = function () {
         });
 
         it("mediaac.spec.4 should define constants for Mediaac errors", function () {
-            expect(MediaError).toBeDefined();
-            expect(MediaError.MEDIA_ERR_NONE_ACTIVE).toBe(0);
-            expect(MediaError.MEDIA_ERR_ABORTED).toBe(1);
-            expect(MediaError.MEDIA_ERR_NETWORK).toBe(2);
-            expect(MediaError.MEDIA_ERR_DECODE).toBe(3);
-            expect(MediaError.MEDIA_ERR_NONE_SUPPORTED).toBe(4);
+            expect(MediaacError).toBeDefined();
+            expect(MediaacError.MEDIA_ERR_NONE_ACTIVE).toBe(0);
+            expect(MediaacError.MEDIA_ERR_ABORTED).toBe(1);
+            expect(MediaacError.MEDIA_ERR_NETWORK).toBe(2);
+            expect(MediaacError.MEDIA_ERR_DECODE).toBe(3);
+            expect(MediaacError.MEDIA_ERR_NONE_SUPPORTED).toBe(4);
         });
 
         it("mediaac.spec.5 should contain a play function", function () {
@@ -174,28 +175,28 @@ exports.defineAutoTests = function () {
             media1.release();
         });
 
-        it("media.spec.15 should contain a getCurrentAmplitude function", function () {
-            var media1 = new Media("dummy");
+        it("mediaac.spec.15 should contain a getCurrentAmplitude function", function () {
+            var media1 = new Mediaac("dummy");
             expect(media1.getCurrentAmplitude).toBeDefined();
             expect(typeof media1.getCurrentAmplitude).toBe('function');
             media1.release();
         });
 
-        it("media.spec.16 should contain a pauseRecord function", function () {
-            var media1 = new Media("dummy");
+        it("mediaac.spec.16 should contain a pauseRecord function", function () {
+            var media1 = new Mediaac("dummy");
             expect(media1.pauseRecord).toBeDefined();
             expect(typeof media1.pauseRecord).toBe('function');
             media1.release();
         });
 
-        it("media.spec.17 should contain a resumeRecord function", function () {
-            var media1 = new Media("dummy");
+        it("mediaac.spec.17 should contain a resumeRecord function", function () {
+            var media1 = new Mediaac("dummy");
             expect(media1.resumeRecord).toBeDefined();
             expect(typeof media1.resumeRecord).toBe('function');
             media1.release();
         });
 
-        it("media.spec.18 should return MediaError for bad filename", function (done) {
+        it("mediaac.spec.18 should return MediaacError for bad filename", function (done) {
             //bb10 dialog pops up, preventing tests from running
             if (cordova.platformId === 'blackberry10') {
                 pending();
@@ -208,7 +209,7 @@ exports.defineAutoTests = function () {
                     context.done = true;
 
                     expect(result).toBeDefined();
-                    expect(result.code).toBe(MediaError.MEDIA_ERR_ABORTED);
+                    expect(result.code).toBe(MediaacError.MEDIA_ERR_ABORTED);
                     if (badMedia) {
                         badMedia.release();
                     }
@@ -230,7 +231,7 @@ exports.defineAutoTests = function () {
                 }
             });
 
-            it("mediaac.spec.16 position should be set properly", function (done) {
+            it("mediaac.spec.19 position should be set properly", function (done) {
                 // no audio hardware available
                 if (!isAudioSupported) {
                     pending();
@@ -256,7 +257,7 @@ exports.defineAutoTests = function () {
                             }, 1000);
                         }
                     };
-                mediaac = new Mediaac(mediaFile, successCallback, failed.bind(self, done, 'media1 = new Mediaac - Error creating Mediaac object. Mediaac file: ' + mediaFile, context), statusChange);
+                mediaac = new Mediaac(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Mediaac - Error creating Mediaac object. Mediaac file: ' + mediaFile, context), statusChange);
                 mediaac.play();
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
@@ -285,11 +286,11 @@ exports.defineAutoTests = function () {
                             }, 1000);
                         }
                     };
-                media = new Mediaac(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
-                media.play();
+                mediaac = new Mediaac(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Mediaac - Error creating Mediaac object. Mediaac file: ' + mediaFile, context), statusChange);
+                mediaac.play();
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
-            it("media.spec.21 should be able to resume playback after pause", function (done) {
+            it("mediaac.spec.21 should be able to resume playback after pause", function (done) {
                 if (!isAudioSupported || cordova.platformId === 'blackberry10') {
                     pending();
                 }
@@ -304,35 +305,36 @@ exports.defineAutoTests = function () {
                 var statusChange = function (statusCode) {
                     if (context.done) return;
 
-                    if (statusCode == Media.MEDIA_RUNNING) {
+                    if (statusCode == Mediaac.MEDIA_RUNNING) {
                         if (!resumed) {
-                            media.seekTo(20000);
-                            media.pause();
+                            mediaac.seekTo(20000);
+                            mediaac.pause();
                             return;
                         }
 
-                        media.getCurrentPosition(function (position) {
-                            expect(position).toBeCloseTo(20, 0);
+                        mediaac.getCurrentPosition(function (position) {
+                            expect(position).toBeGreaterThan(19);
+                            expect(position).toBeLessThan(21);
                             context.done = true;
                             done();
-                        }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
+                        }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting mediaac current position', context));
                     }
 
-                    if (statusCode == Media.MEDIA_PAUSED) {
+                    if (statusCode == Mediaac.MEDIA_PAUSED) {
                         resumed = true;
-                        media.play();
+                        mediaac.play();
                     }
                 };
-                media = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                mediaac = new Mediaac(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Mediaac - Error creating Mediaac object. Mediaac file: ' + mediaFile, context), statusChange);
 
-                // CB-10535: Play after a few secs, to give allow enough buffering of media file before seeking
+                // CB-10535: Play after a few secs, to give allow enough buffering of mediaac file before seeking
                 setTimeout(function() {
-                    media.play();
+                    mediaac.play();
                 }, 4000);
 
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
 
-            it("media.spec.22 should be able to seek through file", function (done) {
+            it("mediaac.spec.22 should be able to seek through file", function (done) {
                 if (!isAudioSupported || cordova.platformId === 'blackberry10') {
                     pending();
                 }
@@ -344,23 +346,23 @@ exports.defineAutoTests = function () {
                 var mediaFile = WEB_MP3_FILE;
                 var successCallback = function () { };
                 var statusChange = function (statusCode) {
-                    if (!context.done && statusCode == Media.MEDIA_RUNNING) {
+                    if (!context.done && statusCode == Mediaac.MEDIA_RUNNING) {
                         checkInterval = setInterval(function () {
                             if (context.done) return;
-                            media.seekTo(5000);
-                            media.getCurrentPosition(function (position) {
+                            mediaac.seekTo(5000);
+                            mediaac.getCurrentPosition(function (position) {
                                 expect(position).toBeCloseTo(5, 0);
                                 context.done = true;
                                 done();
-                            }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position', context));
+                            }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting mediaac current position', context));
                         }, 1000);
                     }
                 };
-                media = new Media(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange);
+                mediaac = new Mediaac(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Mediaac - Error creating Mediaac object. Mediaac file: ' + mediaFile, context), statusChange);
 
-                // CB-10535: Play after a few secs, to give allow enough buffering of media file before seeking
+                // CB-10535: Play after a few secs, to give allow enough buffering of mediaac file before seeking
                 setTimeout(function() {
-                    media.play();
+                    mediaac.play();
                 }, 4000);
 
             }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
@@ -405,16 +407,115 @@ exports.defineAutoTests = function () {
                                 media1.release();
                                 context.done = true;
                                 done();
-                            }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting media current position'),context);
+                            }, failed.bind(null, done, 'media1.getCurrentPosition - Error getting mediaac current position'),context);
                         }, 4000);
                     }
                 };
 
-            var media1 = new Mediaac(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Media - Error creating Media object. Media file: ' + mediaFile, context), statusChange); // jshint ignore:line
+            var media1 = new Mediaac(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Mediaac - Error creating Mediaac object. Mediaac file: ' + mediaFile, context), statusChange); // jshint ignore:line
             //make audio playback two times faster
             media1.setRate(2);
             media1.play();
+        }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+        it("mediaac.spec.25 should be able to play an audio stream", function (done) {
+            // no audio hardware available, OR
+            // O_o Safari can't play the stream, so we're skipping this test on all browsers o_O
+            if (!isAudioSupported || isBrowser) {
+                pending();
+            }
+
+            // The link below points to an infinite mp3 stream
+            var mediaFile = WEB_MP3_STREAM,
+                successCallback,
+                context = this,
+                flag = true,
+                statusChange = function (statusCode) {
+                    console.log("status code: " + statusCode);
+                    if (statusCode == Mediaac.MEDIA_RUNNING && flag) {
+                        //flag variable used to ensure an extra security statement to ensure that the callback is processed only once,
+                        //in case for some reason the statusChange callback is reached more than one time with the same status code.
+                        //Some information about this kind of behavior it can be found at JIRA: CB-7099
+                        flag = false;
+                        expect(true).toBe(true);
+                        media1.stop();
+                        media1.release();
+                        context.done = true;
+                        done();
+                    }
+                };
+
+            var media1 = new Mediaac(mediaFile, successCallback, failed.bind(null, done, 'media1 = new Mediaac - Error creating Mediaac object. Mediaac file: ' + mediaFile, context), statusChange); // jshint ignore:line
+            media1.play();
+        }, ACTUAL_PLAYBACK_TEST_TIMEOUT);
+
+        it("mediaac.spec.26 should not crash or throw when setting the volume right after creating the mediaac", function (done) {
+            //bb10 dialog pops up, preventing tests from running
+            if (cordova.platformId === 'blackberry10') {
+                pending();
+            }
+
+            var mediaFile = WEB_MP3_FILE;
+            var mediaac = null;
+
+            expect(function () {
+                mediaac = new Mediaac(mediaFile);
+                mediaac.setVolume('0.5');
+            }).not.toThrow();
+
+            // if there is no exception or crash in 3 seconds, the spec is completed
+            setTimeout(function () {
+                if (mediaac) {
+                    mediaac.release();
+                    done();
+                }
+            }, 3000);
         });
+
+        it("mediaac.spec.27 should call success or error when trying to stop a mediaac that is in starting state", function (done) {
+            //bb10 dialog pops up, preventing tests from running
+            if (!isAudioSupported || cordova.platformId === 'blackberry10') {
+                pending();
+            }
+
+            var mediaFile = WEB_MP3_FILE;
+            var mediaac = null;
+            var context = this;
+            var beenStarting = false;
+            var safeDone = function () {
+                if (!context.done) {
+                    mediaac.release();
+                    context.done = true;
+                    done();
+                }
+            };
+
+            var errorCallback = jasmine.createSpy('errorCallback').and.callFake(function (e) {
+                expect(true).toBe(true);
+                safeDone();
+            });
+            var successCallback = function () {
+                expect(true).toBe(true);
+                safeDone();
+            };
+            var statusChange = function (s) {
+                if ((s == Mediaac.MEDIA_STARTING) && !context.done) {
+                    beenStarting = true;
+                    mediaac.stop();
+                } else if (s == Mediaac.MEDIA_RUNNING) {
+                    // Some plugin implementations may skip "Starting" state
+                    // so we'll also try to call stop in "Running" state,
+                    // but in this case we should check that the "Starting" state wasn't really reached,
+                    // otherwise it would mean that the previous mediaac.stop() call has been ignored
+                    expect(beenStarting).toBe(false);
+                    mediaac.stop();
+                }
+            };
+
+            mediaac = new Mediaac(mediaFile, successCallback, errorCallback, statusChange);
+            mediaac.play();
+        });
+
     });
 };
 
@@ -644,7 +745,7 @@ exports.defineManualTests = function (contentEl, createActionButton) {
 
     //Record audio
     function recordAudio() {
-        console.log("recordAudio()");
+        console.log("recordAudio(), recording to " + recordSrc);
         console.log(" -- mediaac=" + mediaRec);
 
         releaseAudio();
