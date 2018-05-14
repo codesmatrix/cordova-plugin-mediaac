@@ -1,0 +1,53 @@
+{
+  "name": "cordova-plugin-mediaac",
+  "version": "5.0.2-aac",
+  "description": "Cordova Media AAC Plugin",
+  "cordova": {
+    "id": "cordova-plugin-mediaac",
+    "platforms": [
+      "android",
+      "browser",
+      "ios",
+      "windows"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlexisCaffa/cordova-plugin-mediaac"
+  },
+  "keywords": [
+    "cordova",
+    "media",
+    "mediaac",
+    "aac",
+    "aacp",
+    "aac+",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-browser",
+    "cordova-ios",
+    "cordova-windows"
+  ],
+  "scripts": {
+    "test": "npm run jshint",
+    "jshint": "jshint www && jshint src && jshint tests"
+  },
+  "author": "Apache Software Foundation",
+  "license": "Apache-2.0",
+  "engines": {
+    "cordovaDependencies": {
+      "3.0.0": {
+        "cordova-android": ">=3.0.0"
+      },
+      "4.0.0": {
+        "cordova-android": ">=3.0.0"
+      },
+      "6.0.0": {
+        "cordova": ">100"
+      }
+    }
+  },
+  "devDependencies": {
+    "jshint": "^2.6.0"
+  }
+}
