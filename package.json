@@ -1,20 +1,14 @@
 {
   "name": "cordova-plugin-mediaac",
-  "version": "2.4.2-aac",
+  "version": "5.0.2-aac",
   "description": "Cordova Media AAC Plugin",
   "cordova": {
     "id": "cordova-plugin-mediaac",
     "platforms": [
       "android",
-      "amazon-fireos",
-      "ubuntu",
+      "browser",
       "ios",
-      "blackberry10",
-      "wp7",
-      "wp8",
-      "windows8",
-      "windows",
-      "tizen"
+      "windows"
     ]
   },
   "repository": {
@@ -30,15 +24,9 @@
     "aac+",
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-amazon-fireos",
-    "cordova-ubuntu",
+    "cordova-browser",
     "cordova-ios",
-    "cordova-blackberry10",
-    "cordova-wp7",
-    "cordova-wp8",
-    "cordova-windows8",
-    "cordova-windows",
-    "cordova-tizen"
+    "cordova-windows"
   ],
   "scripts": {
     "test": "npm run jshint",
@@ -49,6 +37,12 @@
   "engines": {
     "cordovaDependencies": {
       "3.0.0": {
+        "cordova-android": ">=3.0.0"
+      },
+      "4.0.0": {
+        "cordova-android": ">=3.0.0"
+      },
+      "6.0.0": {
         "cordova": ">100"
       }
     }

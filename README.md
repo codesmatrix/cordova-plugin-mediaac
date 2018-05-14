@@ -50,17 +50,9 @@ Although in the global scope, it is not available until after the `deviceready` 
 - Android (tested)
 
 Without aac decoders:
-- BlackBerry 10
 - iOS
-- Windows Phone 7 and 8
-- Tizen
-- Windows 8
 - Windows
 - Browser
-
-## Windows Phone Quirks
-
-- Only one media file can be played back at a time.
 
 ## Mediaac
 
