@@ -163,11 +163,11 @@ if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos' |
 
     var channel = require('cordova/channel');
 
-    channel.createSticky('onMediaPluginReady');
-    channel.waitForInitialization('onMediaPluginReady');
+    channel.createSticky('onMediaacPluginReady');
+    channel.waitForInitialization('onMediaacPluginReady');
 
     channel.onCordovaReady.subscribe(function() {
         exec(onMessageFromNative, undefined, 'Mediaac', 'messageChannel', []);
-        channel.initializationComplete('onMediaPluginReady');
+        channel.initializationComplete('onMediaacPluginReady');
     });
 }
