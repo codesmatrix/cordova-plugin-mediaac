@@ -118,7 +118,7 @@ Mediaac.onStatus = function(id, msgType, value) {
         switch(msgType) {
             case Mediaac.MEDIA_STATE :
                 if (media.statusCallback) {
-                    media.statusCallback(value);
+                    media.statusCallback(value+" for "+id);
                 }
                 if(value == Mediaac.MEDIA_STOPPED) {
                     if (media.successCallback) {
